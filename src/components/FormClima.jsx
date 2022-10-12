@@ -3,6 +3,7 @@ import { Card } from "react-bootstrap";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import CardClima from "./CardClima";
+import Spinner from "./Spinner";
 
 const FormClima = () => {
   const [ciudad, setCiudad] = useState("");
@@ -11,6 +12,7 @@ const FormClima = () => {
   const [temperatura, setTemperatura] = useState({});
   const [ciudadAPI, setCiudadAPI] = useState("");
   const [sys, setSys] = useState({});
+  const [mostrarSpinner, setMostrarSpinner] = useState(false);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -25,19 +27,34 @@ const FormClima = () => {
 
   const consultarAPI = async () => {
     try {
+      setMostrarSpinner(true);
       const respuesta = await fetch(
         `https://api.openweathermap.org/data/2.5/weather?q=${ciudad},${pais}&lang=es&appid=2379bde6c1cae4cffefafe1d29717de2&units=metric`
       );
       const dato = await respuesta.json();
-      console.log(dato);
+      console.log(dato.weather);
       setCiudadAPI(dato.name);
       setSys(dato.sys);
       setClima(dato.weather);
       setTemperatura(dato.main);
+      setMostrarSpinner(false);
     } catch (error) {
-      alert("ubicacion no encotrada");
+      setMostrarSpinner(false);
+      console.log("ubicacion no encontrada");
     }
   };
+
+  const mostrarComponente =
+    mostrarSpinner === true ? (
+      <Spinner></Spinner>
+    ) : (
+      <CardClima
+        ciudadAPI={ciudadAPI}
+        clima={clima}
+        temperatura={temperatura}
+        sys={sys}
+      ></CardClima>
+    );
 
   return (
     <Card>
@@ -68,12 +85,7 @@ const FormClima = () => {
           </Button>
         </Form>
       </Card.Header>
-      <CardClima
-        ciudadAPI={ciudadAPI}
-        clima={clima}
-        temperatura={temperatura}
-        sys={sys}
-      ></CardClima>
+      {mostrarComponente}
     </Card>
   );
 };
