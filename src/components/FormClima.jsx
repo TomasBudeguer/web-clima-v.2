@@ -32,15 +32,20 @@ const FormClima = () => {
         `https://api.openweathermap.org/data/2.5/weather?q=${ciudad},${pais}&lang=es&appid=2379bde6c1cae4cffefafe1d29717de2&units=metric`
       );
       const dato = await respuesta.json();
-      console.log(dato.weather);
-      setCiudadAPI(dato.name);
-      setSys(dato.sys);
-      setClima(dato.weather);
-      setTemperatura(dato.main);
-      setMostrarSpinner(false);
+      if (respuesta.status === 200) {
+        console.log(dato.weather);
+        setCiudadAPI(dato.name);
+        setSys(dato.sys);
+        setClima(dato.weather);
+        setTemperatura(dato.main);
+        setMostrarSpinner(false);
+      } else {
+        alert("ubicacion no encontrada");
+        setMostrarSpinner(false);
+      }
     } catch (error) {
       setMostrarSpinner(false);
-      console.log("ubicacion no encontrada");
+      console.log("ocurrio un error en la consulta");
     }
   };
 
